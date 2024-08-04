@@ -20,6 +20,8 @@ const MapHeight = 6;
 let DelayTime = 1000;
 let DelayTimeInterval = 200;
 
+let AIMoveInterval = 1100;
+
 let NumberOfTrees = 3;
 
 const suggestedBlockedTiles = [
@@ -36,10 +38,21 @@ const suggestedBlockedTiles = [
 ];
 
 let bloackedTiles = [...suggestedBlockedTiles.slice(0, NumberOfTrees)];
-let gorillaPosition = "c_1_1";
-let bananaPosition = "c_6_8";
+let gorillaPosition = "c_3_1";
+let bananaPosition = "c_4_8";
+
+const Roles = {
+    gorilla: null,
+    banana: null,
+};
+
+const lastMovements = {
+    gorilla: new Date(),
+    banana: new Date(),
+};
 
 let startTime = null;
+let aiStartTime = null;
 
 const setStartDateMaybe = () => {
     if (!startTime) {
@@ -103,6 +116,16 @@ const isCellOutOfMap = (x, y) => {
     };
 };
 
+const isInvalidTile = (tile) => {
+    var [c, y, x] = tile.split("_");
+
+    if (isCellBlocked(x, y) || isCellOutOfMap(Number(x), Number(y))) {
+        return true;
+    } else {
+        return false;
+    };
+};
+
 const getNextPosition = (x, y, action) => {
     if (action == "up") {
         return [x, y - 1];
@@ -115,13 +138,10 @@ const getNextPosition = (x, y, action) => {
     };
 };
 
-const lastMovements = {
-    gorilla: new Date(),
-    banana: new Date(),
-};
-
 const actorCanPlay = (actor) => {
-    if (new Date() - lastMovements[actor] >= DelayTime) {
+    if (Roles[actor] !== "player") {
+        return false
+    } else if (new Date() - lastMovements[actor] >= DelayTime) {
         lastMovements[actor] = new Date();
         return true;
     } else {
@@ -179,6 +199,53 @@ const initiateSystemAction = (action) => {
     };
 };
 
+const moveGorilla = () => {
+    if (startTime || Roles.banana == "ai") {
+        var nextPosition = getShorterMove(gorillaPosition, bananaPosition);
+        if (nextPosition) {
+            gorillaPosition = nextPosition;
+            initiateMap();
+            if (nextPosition == bananaPosition) {
+                endGame();
+            };
+        };
+    };
+};
+
+const moveBanana = () => {
+    if (startTime || Roles.gorilla == "ai") {
+        var nextPosition = getLongerMove(bananaPosition, gorillaPosition);
+        if (nextPosition) {
+            bananaPosition = nextPosition;
+            initiateMap();
+            if (nextPosition == gorillaPosition) {
+                endGame();
+            };
+        };
+    };
+};
+
+let gorillaIntervalId = null;
+let bananaIntervalId = null;
+
+const initiateGorillaAsAI = () => {
+    if (Roles.gorilla == "ai") {
+        aiStartTime = new Date();
+        gorillaIntervalId = setInterval(function () {
+            moveGorilla();
+        }, AIMoveInterval);
+    };
+};
+
+const initiateBananaAsAI = () => {
+    if (Roles.banana == "ai") {
+        aiStartTime = new Date();
+        bananaIntervalId = setInterval(function () {
+            moveBanana();
+        }, AIMoveInterval);
+    };
+};
+
 const checkKeyAction = (keyCode) => {
     var keyParams = KeyMapper[keyCode];
     if (keyParams) {
@@ -191,12 +258,35 @@ const checkKeyAction = (keyCode) => {
     };
 };
 
-const endGame = () => {
-    const gameBoard = document.getElementById("board");
-    const resultBoard = document.getElementById("result");
-    const timeSpan = document.getElementById("timeTaken");
+const settingsBoard = document.getElementById("settings");
+const gameBoard = document.getElementById("board");
+const resultBoard = document.getElementById("result");
 
-    const timeTaken = Math.round((new Date() - startTime) / 1000);
+const startGame = () => {
+    const gorillaRole = document.getElementById("gorillaRole").value;
+    const bananaRole = document.getElementById("bananaRole").value;
+
+    Roles.gorilla = gorillaRole;
+    Roles.banana = bananaRole;
+
+    initiateGorillaAsAI();
+    initiateBananaAsAI();
+
+    settingsBoard.style.display = "none";
+    gameBoard.style.display = "block";
+};
+
+const endGame = () => {
+    const timeSpan = document.getElementById("timeTaken");
+    const actualStartTime = startTime ? startTime : aiStartTime;
+    const timeTaken = Math.round((new Date() - actualStartTime) / 1000);
+
+    if (gorillaIntervalId) {
+        clearInterval(gorillaIntervalId);
+    };
+    if (bananaIntervalId) {
+        clearInterval(bananaIntervalId);
+    };
 
     gameBoard.style.display = "none";
     resultBoard.style.display = "block";
@@ -215,4 +305,116 @@ window.onload = () => {
             checkKeyAction(event.keyCode);
         };
     });
+};
+
+const getShorterMove = (a, b) => {
+    const [ac, ayS, axS] = a.split("_");
+    const [bc, byS, bxS] = b.split("_");
+
+    const [ay, ax, by, bx] = [Number(ayS), Number(axS), Number(byS), Number(bxS)];
+
+    const xDistance = Math.abs(ax - bx);
+    const yDistance = Math.abs(ay - by);
+
+    if (xDistance >= yDistance) {
+        const nextXMoveMaybe = getNextX(ax, bx, ay);
+        if (isInvalidTile(nextXMoveMaybe)) {
+            const nextYMoveMaybe = getNextY(ay, by, ax);
+            if (isInvalidTile(nextYMoveMaybe)) {
+                return null;
+            } else {
+                return nextYMoveMaybe;
+            };
+        } else {
+            return nextXMoveMaybe;
+        };
+    } else {
+        const nextYMoveMaybe = getNextY(ay, by, ax);
+        if (isInvalidTile(nextYMoveMaybe)) {
+            const nextXMoveMaybe = getNextX(ax, bx, ay);
+            if (isInvalidTile(nextXMoveMaybe)) {
+                return null;
+            } else {
+                return nextXMoveMaybe;
+            };
+        } else {
+            return nextYMoveMaybe;
+        };
+    };
+};
+
+const getLongerMove = (a, b) => {
+    const [ac, ayS, axS] = a.split("_");
+    const [bc, byS, bxS] = b.split("_");
+
+    const [ay, ax, by, bx] = [Number(ayS), Number(axS), Number(byS), Number(bxS)];
+
+    const xDistance = Math.abs(ax - bx);
+    const yDistance = Math.abs(ay - by);
+
+    if (xDistance < yDistance) {
+        const prevXMoveMaybe = getPrevX(ax, bx, ay);
+        if (isInvalidTile(prevXMoveMaybe)) {
+            const prevYMoveMaybe = getPrevY(ay, by, ax);
+            if (isInvalidTile(prevYMoveMaybe)) {
+                const nextXMoveMaybe = getNextX(ax, bx, ay);
+                if (isInvalidTile(nextXMoveMaybe)) {
+                    const nextYMoveMaybe = getNextY(ay, by, ax);
+                    if (isInvalidTile()) {
+                        return null;
+                    } else {
+                        return nextYMoveMaybe;
+                    };
+                } else {
+                    return nextXMoveMaybe;
+                };
+            } else {
+                return prevYMoveMaybe;
+            };
+        } else {
+            return prevXMoveMaybe;
+        };
+    } else {
+        const prevYMoveMaybe = getPrevY(ay, by, ax);
+        if (isInvalidTile(prevYMoveMaybe)) {
+            const prevXMoveMaybe = getPrevX(ax, bx, ay);
+            if (isInvalidTile(prevXMoveMaybe)) {
+                const nextYMoveMaybe = getNextY(ay, by, ax);
+                if (isInvalidTile(nextYMoveMaybe)) {
+                    const nextXMoveMaybe = getNextX(ax, bx, ay);
+                    if (isInvalidTile(nextXMoveMaybe)) {
+                        return null;
+                    } else {
+                        return nextXMoveMaybe;
+                    };
+                } else {
+                    return nextYMoveMaybe;
+                };
+            } else {
+                return prevXMoveMaybe;
+            };
+        } else {
+            return prevYMoveMaybe;
+        };
+    };
+};
+
+const getNextX = (ax, bx, ay) => {
+    const nextX = ax > bx ? ax - 1 : ax + 1;
+    return `c_${ay}_${nextX}`;
+};
+
+const getNextY = (ay, by, ax) => {
+    const nextY = ay > by ? ay - 1 : ay + 1;
+    return `c_${nextY}_${ax}`;
+};
+
+const getPrevX = (ax, bx, ay) => {
+    const prevX = ax <= bx ? ax - 1 : ax + 1;
+    return `c_${ay}_${prevX}`;
+};
+
+const getPrevY = (ay, by, ax) => {
+    const prevY = ay <= by ? ay - 1 : ay + 1;
+    return `c_${prevY}_${ax}`;
 };

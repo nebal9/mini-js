@@ -1,13 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./GnB.css">
     <title>Gorilla n Banana</title>
 </head>
+
 <body>
     <h1>🦍 & 🍌</h1>
+    <div id="settings">
+        <h2>Welcome to the Gorilla and Banana game</h2>
+
+        <h3>Please choose roles</h3>
+        <div class="roles">
+            <div class="role">
+                <div>🦍</div>
+                <select id="gorillaRole">
+                    <option value="player">Player</option>
+                    <option value="ai">AI</option>
+                </select>
+            </div>
+
+            <div class="role">
+                <div>🍌</div>
+                <select id="bananaRole">
+                    <option value="player">Player</option>
+                    <option value="ai">AI</option>
+                </select>
+            </div>
+        </div>
+
+        <button onclick="startGame()">
+            Start game
+        </button>
+    </div>
+
     <div id="board">
         <div class="row">
             <div class="cell" id="c_1_1"></div>
@@ -86,4 +115,5 @@
 
     <script src="./GnB.js"></script>
 </body>
+
 </html>
