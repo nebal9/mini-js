@@ -1,0 +1,51 @@
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+h1 {
+    display: inline;
+    margin-top: 0;
+}
+
+#board {
+    background-color: yellowgreen;
+    border: 1px solid black;
+}
+
+.row {
+    display: flex;
+}
+
+.cell {
+    width: 80px;
+    height: 80px;
+    border: 1px solid black;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 30px;
+}
+
+#result {
+    margin: 32px 0;
+    text-align: center;
+    display: none;
+}
+
+#timeTaken {
+    color: orangered;
+    font-weight: 500;
+}
+
+button {
+    cursor: pointer;
+    margin-top: 24px;
+    padding: 10px 30px;
+    font-size: 24px;
+    font-weight: 500;
+}
