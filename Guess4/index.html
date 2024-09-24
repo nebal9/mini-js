@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./guess4.css">
+    <title>Guess 4</title>
+</head>
+
+<body>
+    <h1 class="title">Guess 4</h1>
+    <div id="win">
+        Congrats, You won <br>
+        It took you <span id="attempts">0</span> attempts <br><br>
+        <button onclick="window.location.reload()">Play again</button>
+    </div>
+    <div class="game">
+        <div id="items">Start guessing</div>
+        <div class="controls">
+            <div class="inputs">
+                <p>Guess number:</p>
+                <input id="mainInput" onkeyup="validateInput(this)"></input>
+            </div>
+            <div class="numbers">
+                <p>Mapper</p>
+                <div>
+                    <div class="number" onclick="changeBG(this)">1</div>
+                    <div class="number" onclick="changeBG(this)">2</div>
+                    <div class="number" onclick="changeBG(this)">3</div>
+                    <div class="number" onclick="changeBG(this)">4</div>
+                </div>
+                <div>
+                    <div class="number" onclick="changeBG(this)">5</div>
+                    <div class="number" onclick="changeBG(this)">6</div>
+                    <div class="number" onclick="changeBG(this)">7</div>
+                </div>
+                <div>
+                    <div class="number" onclick="changeBG(this)">8</div>
+                    <div class="number" onclick="changeBG(this)">9</div>
+                    <div class="number" onclick="changeBG(this)">0</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="./guess4.js"></script>
+</body>
+
+</html>

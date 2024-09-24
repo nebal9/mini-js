@@ -1,0 +1,92 @@
+.title {
+    text-align: center;
+}
+
+#win {
+    text-align: center;
+    margin-bottom: 24px;
+    font-size: 20px;
+    color: blueviolet;
+    display: none;
+}
+
+.game {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 30px;
+}
+
+#items {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 60%;
+    border: 2px solid silver;
+    padding: 4px;
+}
+
+#items>div {
+    padding: 4px 8px;
+    text-align: center;
+}
+
+#items>div>b {
+    padding-right: 20px;
+}
+
+#items>div>span:nth-of-type(1) {
+    font-weight: 600;
+    color: rgb(3, 219, 3);
+}
+
+#items>div>span:nth-of-type(2) {
+    font-weight: 600;
+    color: rgb(14, 166, 212);
+}
+
+.controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    width: calc(35% - 30px);
+    border: 2px solid silver;
+    padding: 20px 0;
+}
+
+.numbers {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+}
+
+.numbers>div {
+    display: flex;
+    gap: 8px;
+}
+
+.number {
+    font-size: 20px;
+    border: 1px solid silver;
+    padding: 20px;
+    cursor: pointer;
+}
+
+#mainInput {
+    font-size: 24px;
+    text-align: center;
+}
+
+@media only screen and (max-width: 600px) {
+    #items {
+        width: calc(95% - 30px);
+    }
+
+    .controls {
+        width: calc(95% - 30px);
+    }
+}
