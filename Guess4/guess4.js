@@ -43,13 +43,17 @@ const registerInput = (guess) => {
     if (inPlace == 4) {
         document.getElementById("attempts").innerHTML = items.length;
         document.getElementById("win").style.display = "block";
+        document.getElementById("inputs").style.display = "none";
+        scrollTo(0,0);
     };
 };
 
 const validateInput = (element) => {
     const lastChar = element.value.charAt(element.value.length - 1);
 
-    if (!currentInputValue.includes(lastChar) && allowedInputs.includes(Number(lastChar))) {
+    if (element.value.length < currentInputValue.length) {
+        currentInputValue = element.value;
+    } else if (!currentInputValue.includes(lastChar) && allowedInputs.includes(Number(lastChar))) {
         currentInputValue = element.value;
     } else {
         element.value = currentInputValue;
